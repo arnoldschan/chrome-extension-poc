@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Growise POC",
+  "version": "1.0",
+  "description": "POC for new Growise Extension",
+
+  "icons": {
+    "16": "images/icon-16.png",
+    "32": "images/icon-32.png",
+    "48": "images/icon-48.png",
+    "128": "images/icon-128.png"
+  },
+  "background": {
+    "service_worker": "sw.js",
+    "type": "module"
+  },
+  "host_permissions": ["<all_urls>"],
+  "permissions": ["tabs", "activeTab", "storage", "scripting", "webNavigation"]
+}
