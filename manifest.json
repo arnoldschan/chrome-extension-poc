@@ -15,5 +15,12 @@
     "type": "module"
   },
   "host_permissions": ["<all_urls>"],
-  "permissions": ["tabs", "activeTab", "storage", "scripting", "webNavigation"]
+  "permissions": [
+    "alarms",
+    "tabs",
+    "activeTab",
+    "storage",
+    "scripting",
+    "webNavigation"
+  ]
 }

@@ -22,12 +22,18 @@ if (
 // encoded to base64 or hashed if possible
 
 const url = new URL(document.location.href);
+function runTimer() {
+  chrome.runtime.sendMessage({ action: "timerSave" });
+}
 if (url.searchParams.get(HINTCRAWLNAME) !== null) {
   const bodyDom = document.body;
   var initDom = document.createElement("div");
   initDom.id = "growise-crawler";
-  initDom.innerHTML = "<div><h1>Hello Extensions</h1></div>";
+
+  initDom.innerHTML =
+    "<div><h1>Hello Extensions</h1><button>Timer 5 sec</button></div>";
   bodyDom.insertBefore(initDom, bodyDom.childNodes[0]);
+  document.querySelector("#growise-crawler > div > button").onclick = runTimer;
 }
 
 // if for auth
