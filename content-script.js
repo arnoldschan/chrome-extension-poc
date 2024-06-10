@@ -22,18 +22,35 @@ if (
 // encoded to base64 or hashed if possible
 
 const url = new URL(document.location.href);
-function runTimer() {
-  chrome.runtime.sendMessage({ action: "timerSave" });
-}
 if (url.searchParams.get(HINTCRAWLNAME) !== null) {
   const bodyDom = document.body;
   var initDom = document.createElement("div");
   initDom.id = "growise-crawler";
 
   initDom.innerHTML =
-    "<div><h1>Hello Extensions</h1><button>Timer 5 sec</button></div>";
+    "<div><h1>Hello Extensions</h1><button id='alarm'>Timer every 1 minute via alarm</button><button id='websocket'>Timer send message via WS</button></div>";
   bodyDom.insertBefore(initDom, bodyDom.childNodes[0]);
-  document.querySelector("#growise-crawler > div > button").onclick = runTimer;
+
+  function runTimer() {
+    chrome.runtime.sendMessage({ action: "timerSave" });
+  }
+  document.querySelector("#alarm").onclick = runTimer;
+
+  function sendMsg() {
+    const ws = new WebSocket(
+      "wss://free.blr2.piesocket.com/v3/1?api_key=ul5PB5F7kqW2rmh0VSxxTQRNYNdsZ8jPw6OECDV9&notify_self=1"
+    );
+    ws.onopen = (event) => {
+      ws.send(
+        JSON.stringify({
+          action: "runCrawler",
+          url: "https://www.kkday.com/en-id?growise-extension=docrawl",
+        })
+      );
+    };
+  }
+  // the button will send websocket message with url info to service worker
+  document.querySelector("#websocket").onclick = sendMsg;
 }
 
 // if for auth

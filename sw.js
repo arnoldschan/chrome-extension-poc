@@ -1,6 +1,12 @@
-// listener to make the service worker inspectable from start
+// import { websocketConnection } from "./ws";
+// const { websocketConnection } = ("./ws");
+import { websocketConnection } from "./ws.js";
+
 chrome.runtime.onStartup.addListener(function () {
-  console.log("started");
+  websocketConnection();
+});
+chrome.runtime.onInstalled.addListener(function () {
+  websocketConnection();
 });
 
 // listener to inject the script
