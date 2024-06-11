@@ -27,14 +27,64 @@ export function websocketConnection() {
     keepAlive();
   };
 
-  webSocket.onmessage = (event) => {
+  webSocket.onmessage = async (event) => {
     console.log(`websocket received message: ${event.data}`);
     const msg = JSON.parse(event.data);
     switch (msg.action) {
+      case "createCrawler":
+        // {"url": "https://kkday.com", "action": "createCrawler"}
+
+        // store the previous tab
+        let queryOptions = { active: true, lastFocusedWindow: true };
+        let [lastTab] = await chrome.tabs.query(queryOptions);
+
+        // open new tab to load the create crawler script
+        var tab = await chrome.tabs.create({ url: msg.url });
+        var { options } = await chrome.storage.local.get("options");
+        chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          files: ["scripts/createCrawler.js"],
+          ...options,
+        });
+        // go back to prev tab
+        const timeoutTab = setTimeout(function () {
+          chrome.tabs.remove(tab.id, () => {
+            chrome.tabs.move(lastTab.id, { index: 0 });
+            clearTimeout(timeoutTab);
+          });
+        }, 10000);
+
+        return;
+      case "editCrawler":
+        // {"url": "https://kkday.com", "action": "editCrawler"}
+
+        // open new tab to load the edit crawler script
+        var tab = await chrome.tabs.create({ url: msg.url });
+        var { options } = await chrome.storage.local.get("options");
+        chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          files: ["scripts/editCrawler.js"],
+          ...options,
+        });
+
+        return;
+
       case "runCrawler":
+        // {"url": "https://kkday.com", "action": "runCrawler"}
         // reference: https://developer.chrome.com/docs/extensions/reference/api/tabs
-        // open new tab from the sent event msg
-        chrome.tabs.create({ url: msg.url });
+        // open new window
+        var window = await chrome.windows.create();
+
+        // create new tab from msg
+        var tab = await chrome.tabs.create({ url: msg.url });
+        var { options } = await chrome.storage.local.get("options");
+        chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          files: ["scripts/runCrawler.js"],
+          ...options,
+        });
+
+        return;
     }
   };
 
